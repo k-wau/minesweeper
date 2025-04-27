@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int height = 10;
 int width = 10;
@@ -54,11 +55,6 @@ enum gameState show(int x, int y, int8_t board[height][width], int8_t selected[h
 };
 
 int main(void) {
-	// dummy variables, hopefully replaced with user input later
-
-	// I made these variables global so I don't need them right now
-	// int width = 10;
-	// int height = 10;
 	enum gameState state = PLAYING;
 	int mines = 8;
 	int8_t board[height][width];
@@ -75,7 +71,9 @@ int main(void) {
 		}
 	}
 	// random number initialization
-	srand(1);
+	int seed = (int)time(NULL);
+	srand(seed);
+	printf("%d\n", seed);
 
 	// bomb generation with resampling for good randomness
 	int bombX, bombY;
@@ -106,7 +104,7 @@ int main(void) {
 			board[bombY + 1][bombX] = board[bombY + 1][bombX] == 9 ? 9 : board[bombY + 1][bombX] + 1;
 		}
 		if (bombY < height - 1 && bombX < width - 1) {
-			board[bombY + 1][bombX + 1] = board[bombY + 1][bombX -+1] == 9 ? 9 : board[bombY + 1][bombX + 1] + 1;
+			board[bombY + 1][bombX + 1] = board[bombY + 1][bombX + 1] == 9 ? 9 : board[bombY + 1][bombX + 1] + 1;
 		}
 		if (bombX > 0) {
 			board[bombY][bombX - 1] = board[bombY][bombX - 1] == 9 ? 9 : board[bombY][bombX - 1] + 1;
@@ -135,11 +133,14 @@ int main(void) {
 		// get the next input
 		scanf("%d %d", &selectedY, &selectedX);
 		state = show(selectedX, selectedY, board, selected);
+		if (selectedTotal + mines == height * width) {
+			state = WIN;
+		}
 	}
 
 	if (state == WIN) {
-		printf("Congrats! You won!");
+		printf("Congrats! You won!\n");
 	} else {
-		printf("Aw! There was a mine on (%d, %d)", selectedY, selectedX);
+		printf("Aw! There was a mine on (%d, %d)\n", selectedY, selectedX);
 	}
 }
