@@ -3,6 +3,7 @@
 
 int height = 10;
 int width = 10;
+int selectedTotal = 0;
 
 enum gameState {
 	PLAYING,
@@ -18,9 +19,14 @@ int max8(int8_t a, int8_t b) {
 	return a > b ? a : b;
 }
 
-enum gameState show(int x, int y, int8_t **board, int8_t **selected) {
+enum gameState show(int x, int y, int8_t board[height][width], int8_t selected[height][width]) {
 	enum gameState result = PLAYING;
+	if(selected[y][x] == 1)
+		return PLAYING;
+
 	selected[y][x] = 1;
+	selectedTotal += 1;
+
 	if (board[y][x] == 9) {
 		result = LOSE;
 	}
@@ -30,16 +36,16 @@ enum gameState show(int x, int y, int8_t **board, int8_t **selected) {
 			if (y > 0)
 				show(x - 1, y - 1, board, selected);
 			if (y < height - 1)
-				show (x - 1, y - 1, board, selected);
+				show (x - 1, y + 1, board, selected);
 		}
-		if (x < width - 1) {
+		if (x < width - 1){
 			show(x + 1, y, board, selected);
-			if (y < 0) 
+			if (y > 0) 
 				show(x + 1, y - 1, board, selected);
 			if (y < height - 1)
 				show(x + 1, y + 1, board, selected);
 		}
-		if (y < 0) 
+		if (y > 0) 
 			show(x, y - 1, board, selected);
 		if (y < height - 1)
 			show(x, y + 1, board, selected);
@@ -63,8 +69,13 @@ int main(void) {
 			board[j][i] = 0;
 		}
 	}
+	for (int i = 0; i < height; i++) {
+		for (int j = 0;j < width; j++) {
+			selected[j][i] = 0;
+		}
+	}
 	// random number initialization
-	srand(0);
+	srand(1);
 
 	// bomb generation with resampling for good randomness
 	int bombX, bombY;
@@ -122,8 +133,13 @@ int main(void) {
 		}
 		printf("\n");
 		// get the next input
-		scanf("%d", &selectedX);
-		scanf("%d", &selectedY);
+		scanf("%d %d", &selectedY, &selectedX);
 		state = show(selectedX, selectedY, board, selected);
+	}
+
+	if (state == WIN) {
+		printf("Congrats! You won!");
+	} else {
+		printf("Aw! There was a mine on (%d, %d)", selectedY, selectedX);
 	}
 }
