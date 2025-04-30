@@ -138,6 +138,18 @@ int main(void) {
 		}
 	}
 
+	for (int i = 0; i < height; i++) {
+		for (int j = 0;j < width; j++) {
+			if (selected[j][i] == 1) {
+				printf("%d ", board[j][i]);
+			} else {
+				printf("= ");
+			}	
+		}
+		printf("\n");
+	}
+	printf("\n");
+
 	if (state == WIN) {
 		printf("Congrats! You won!\n");
 	} else {
